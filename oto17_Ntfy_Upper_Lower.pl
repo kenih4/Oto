@@ -37,16 +37,24 @@ http://websvr02.spring8.or.jp/cgi-bin/syncdaq/plot_multi.cgi?&Command=plot&LeftS
 
 Usage:
 
+	モジュールインストール
+	cpan Switch
+	cpan Win32::Sound
+
+
 	実験棟
-	perl oto17_Ntfy_Upper_Lower_TEST.pl xfel_bl_3_tc_bm_1_pd/charge 93 1000 0.02 oto0.wav 3
-    perl oto17_Ntfy_Upper_Lower_TEST.pl xfel_mon_msbpm_bl3_dump_1_beamstatus/summary 0.85 1.05 0.21 oto0.wav 3
+	perl oto17_Ntfy_Upper_Lower.pl xfel_bl_3_tc_bm_1_pd/charge 93 1000 0.02 oto0.wav 3
+    perl oto17_Ntfy_Upper_Lower.pl xfel_mon_msbpm_bl3_dump_1_beamstatus/summary 0.85 1.05 0.21 oto0.wav 3
+
 
 	加速器 xfel_mon_msbpm_bl3_dump_1_y/potition
-	perl oto17_Ntfy_Upper_Lower_TEST.pl 550648 98 102 0.02 oto0.wav 3
+	perl oto17_Ntfy_Upper_Lower.pl 550648 98 102 0.02 oto0.wav 3
+
+	新しくターミナルを開いて実行する場合
+	start cmd /k perl oto17_Ntfy_Upper_Lower.pl xfel_bl_3_tc_bm_1_pd/charge 93 1000 0.02 oto0.wav 3
 
 
 	pp -o oto.exe oto17_Ntfy_Upper_Lower.pl
-
 
 
 
