@@ -67,15 +67,16 @@ $console->Window(0, 0, 19, 19);  # left, top, right, bottom（0ベース）
 $console->Cursor(0, 0);
 print "Changed Terminal Size!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
 
+
 #一時ファイル作成に以下のものを使うと、GLOB(0x....)という謎のファイルができてしまう
 use File::Temp qw/ tempfile /;
 my ($out, $tempfilename) = tempfile( UNLINK => 1 );
 my ($errlog, $tempfilename_errlog) = tempfile( UNLINK => 1 );
 print  "Temp file :	[$tempfilename]	Created by File::Temp\n";
 print  "Temp file stderr :	[$tempfilename_errlog]	Created by File::Temp\n";
-
 	
 =cut
+
 
 
 
@@ -266,7 +267,7 @@ if ($ARGV[0] =~ /^[0-9]+$/) {
 		$n_wav++;
 
 		if($cnt >= $cnt_limit){
-			print  "\e[48;5;124m Onsei!!!		[$perc]			<$wav_file> \e[0mGHI\n";
+			print  "\e[48;5;124m Onsei!!!		[$perc]			<$wav_file> \e[0m\n";
 
 #			mail_send($ARGV[0], ($result[3]/$initial_value)*100);
 #			system("python Send_notification_by_pushbullet.py $ARGV[0]");
