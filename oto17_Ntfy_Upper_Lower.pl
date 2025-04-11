@@ -85,7 +85,7 @@ print  "Temp file stderr :	[$tempfilename_errlog]	Created by File::Temp\n";
 #my $tmpdir = $ENV{TMP} || $ENV{TEMP};
 use File::Spec;
 my $tmpdir = File::Spec->tmpdir; # OS依存がないのでこの方法がよい
-print "Tem folder :	$tmpdir\n";
+print "Temp folder :	$tmpdir\n";
 
 
 #mail_send('A','B','C');
@@ -262,11 +262,11 @@ if ($ARGV[0] =~ /^[0-9]+$/) {
 
 #	if( (($result[3] < $thre_LOW) || ($result[3] > $thre_UP)) && $result[5] < 200){
 	if( (($perc < $thre_LOW) || ($perc > $thre_UP)) && $result[5] < 200){
-		print  "cnt = $cnt\n";
+		print  "\e[38;5;1m cnt = $cnt \e[0m\n";
 		$n_wav++;
+
 		if($cnt >= $cnt_limit){
-#			print  "Onsei	n_wav = $wav[$n_wav]\n";
-			print  "Onsei!!!		[$perc]			<$wav_file>\n";
+			print  "\e[48;5;124m Onsei!!!		[$perc]			<$wav_file> \e[0mGHI\n";
 
 #			mail_send($ARGV[0], ($result[3]/$initial_value)*100);
 #			system("python Send_notification_by_pushbullet.py $ARGV[0]");
