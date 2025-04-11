@@ -25,6 +25,8 @@ use warnings;
 use Net::SMTPS;
 
 
+
+
 =pod
 sleep 100;
 $line = <STDIN>;
@@ -58,9 +60,32 @@ Usage:
 
 
 
+# ターミナルサイズ変更したいがこれだとダメ
+use Win32::Console;
+my $console = Win32::Console->new();
+$console->Window(0, 0, 19, 19);  # left, top, right, bottom（0ベース）
+$console->Cursor(0, 0);
+print "Changed Terminal Size!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
+
+#一時ファイル作成に以下のものを使うと、GLOB(0x....)という謎のファイルができてしまう
+use File::Temp qw/ tempfile /;
+my ($out, $tempfilename) = tempfile( UNLINK => 1 );
+my ($errlog, $tempfilename_errlog) = tempfile( UNLINK => 1 );
+print  "Temp file :	[$tempfilename]	Created by File::Temp\n";
+print  "Temp file stderr :	[$tempfilename_errlog]	Created by File::Temp\n";
 
 	
 =cut
+
+
+
+
+
+
+#my $tmpdir = $ENV{TMP} || $ENV{TEMP};
+use File::Spec;
+my $tmpdir = File::Spec->tmpdir; # OS依存がないのでこの方法がよい
+print "Tem folder :	$tmpdir\n";
 
 
 #mail_send('A','B','C');
@@ -73,7 +98,7 @@ printf "signal=%s	thre_LOW=%s thre_UP=%s	volume=%s	wav_file=%s	cnt_limit=%s\n\n"
 print "ABC\e[4;31;44mDEF\e[0mGHI\n";
 print "ABC\e[38;5;45mDEF\e[0mGHI\n";
 
-open(STDERR,">"."stderr.log") or die "CANNOT redirect STDERR to stderr.log";
+open(STDERR,">"."$tmpdir/stderr.log") or die "CANNOT redirect STDERR to stderr.log";
 
 use constant {
     SHOTNUM => 1000,
@@ -200,12 +225,13 @@ while(1){
 my @result;
 if ($ARGV[0] =~ /^[0-9]+$/) {
 	#print "$ARGV[0]		ACC\n";
-	@result = Get_only_data_ACC($url,"out.txt");
+	#@result = Get_only_data_ACC($url,"C:\\Users\\kenic\\AppData\\Local\\Temp\\out.txt");
+	@result = Get_only_data_ACC($url,"$tmpdir/out.txt");
 }else{
 	#print "$ARGV[0] 	EXP\n";
-	@result = Get_only_data_EXP($url,"out.txt");	
+	#@result = Get_only_data_EXP($url,"C:\\Users\\kenic\\AppData\\Local\\Temp\\out.txt");	
+	@result = Get_only_data_EXP($url,"$tmpdir/out.txt");
 }
-
 #	print $url;
 #	print  "result	@result\n";
 
@@ -277,6 +303,7 @@ if ($ARGV[0] =~ /^[0-9]+$/) {
 
 
 close(STDERR);
+
 
 print "\n END \n\n";
 

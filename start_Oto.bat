@@ -1,5 +1,6 @@
 @echo off
 
+
 color 1d
 
 echo arg1: %1
