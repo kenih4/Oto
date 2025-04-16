@@ -1,0 +1,7 @@
+Windows Registry Editor Version 5.00
+# ちょっとだめ。　たぶんバッチからperlを呼び出してるから
+[HKEY_CLASSES_ROOT\lnkfile\shell\run_selected_shortcuts]
+@="run_selected_shortcuts"
+
+[HKEY_CLASSES_ROOT\lnkfile\shell\run_selected_shortcuts\command]
+@="\"C:\\Windows\\System32\\cmd.exe\" /c \"C:\\Users\\kenic\\Dropbox\\gitdir\\Oto\\run_selected_shortcuts.bat\" \"%1\""
