@@ -19,11 +19,14 @@ use POSIX 'strftime';
 use Win32::Sound;
 Win32::Sound::Volume('100%');
 
+use win32;
+
 use feature qw(say);
 use strict;
 use warnings;
 use Net::SMTPS;
 
+use Win32::GuiTest qw(FindWindowLike SetForegroundWindow);
 
 
 
@@ -74,9 +77,20 @@ my ($out, $tempfilename) = tempfile( UNLINK => 1 );
 my ($errlog, $tempfilename_errlog) = tempfile( UNLINK => 1 );
 print  "Temp file :	[$tempfilename]	Created by File::Temp\n";
 print  "Temp file stderr :	[$tempfilename_errlog]	Created by File::Temp\n";
-	
+
+コマンドプロンプトのウィンドウタイトル
+「C:\windows\system32\cmd.exe - perl  oto17_Ntfy_Upper_Lower.pl xfel_bl_3_tc_bm_1_pd/charge 93 1000 0.02 oto0.wav 3」
+「C:\windows\system32\cmd.exe - perl  oto17_Ntfy_Upper_Lower.pl xfel_bl_1_tc_gm_1_pd_fitting_peak/voltage 90 1000 0.02 oto0.wav 3」
+
 =cut
 
+
+
+
+
+# タイトルに "コマンド プロンプト" を含むウィンドウを最前面に　ダメ
+#my @windows = FindWindowLike(0, "C:\windows\system32\cmd.exe - perl  oto17_Ntfy_Upper_Lower.pl xfel_bl_1_tc_gm_1_pd_fitting_peak/voltage 90 1000 0.02 oto0.wav 3"); # ウィンドウタイトルに応じて変えてください
+#SetForegroundWindow($windows[0]) if @windows;
 
 
 
@@ -252,10 +266,10 @@ if ($ARGV[0] =~ /^[0-9]+$/) {
 
 	#	Many Not Converged (ex. Beam stop)
 	if($result[5] >= 500){
-		print  "Onsei	n_wav = $wav_other[0]\n";
-#	    system("change_volume.exe $vol");        
-#		Win32::Sound::Play("wav/".$wav_other[0],SND_NOSTOP);
-#		Win32::Sound::Stop();
+		print  "Onsei Teishi	n_wav = $wav_other[0]\n";
+	    system("change_volume.exe 0.01");        
+		Win32::Sound::Play("wav/".$wav_other[0],SND_NOSTOP);
+		Win32::Sound::Stop();
 		system("curl -d \"$dt_n	$ARGV[0]	Many Not Converged\" ntfy.sh/Uz44wThqEATElY48");
 		sleep(WAITSEC);
 	}
@@ -268,7 +282,7 @@ if ($ARGV[0] =~ /^[0-9]+$/) {
 
 		if($cnt >= $cnt_limit){
 			print  "\e[48;5;124m Onsei!!!		[$perc]			<$wav_file> \e[0m\n";
-
+			Win32::MsgBox($ARGV[0], 0 + 48, "Caption");
 #			mail_send($ARGV[0], ($result[3]/$initial_value)*100);
 #			system("python Send_notification_by_pushbullet.py $ARGV[0]");
 			system("curl -d \"$dt_n	$ARGV[0]	$perc % \" ntfy.sh/Uz44wThqEATElY48");
