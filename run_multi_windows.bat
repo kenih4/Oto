@@ -28,7 +28,7 @@ goto loop
 set "file=%~1"
 if !x! gtr 1000 (
     set x=0
-    set /a y+=%offset%
+    set /a y+=370
 )
 echo %x% %y%
 powershell -ExecutionPolicy Bypass -File "%~dp0launch_windows.ps1" -shortcut "%file%" -x !x! -y !y!

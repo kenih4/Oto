@@ -66,4 +66,4 @@ public class NativeMethods {
 #$proc = Get-Process cmd | Sort-Object StartTime -Descending | Select-Object -First 1
 $proc = Get-Process -Name "WindowsTerminal" | Sort-Object StartTime -Descending | Select-Object -First 1
 Write-Host proc: $proc
-[NativeMethods]::MoveWindow($proc.MainWindowHandle, $x, $y, 800, 400, $true)
+[NativeMethods]::MoveWindow($proc.MainWindowHandle, $x, $y, 1800, 370, $true)

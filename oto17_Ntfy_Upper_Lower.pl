@@ -113,7 +113,7 @@ printf "signal=%s	thre_LOW=%s thre_UP=%s	volume=%s	wav_file=%s	cnt_limit=%s\n\n"
 print "ABC\e[4;31;44mDEF\e[0mGHI\n";
 print "ABC\e[38;5;45mDEF\e[0mGHI\n";
 
-open(STDERR,">"."$tmpdir/stderr.log") or die "CANNOT redirect STDERR to stderr.log";
+#open(STDERR,">"."$tmpdir/stderr.log") or die "CANNOT redirect STDERR to stderr.log";
 
 use constant {
     SHOTNUM => 1000,
@@ -317,7 +317,7 @@ if ($ARGV[0] =~ /^[0-9]+$/) {
 # - - - - - - - 
 
 
-close(STDERR);
+#close(STDERR);
 
 
 print "\n END \n\n";
