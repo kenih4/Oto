@@ -27,7 +27,6 @@ my $wid = `xdotool getactivewindow`;
 chomp $wid;
 print $wid;
 
-use win32;
-Win32::MsgBox("Message", 1 + 48, "Caption");
+
 
 print "END\n";
