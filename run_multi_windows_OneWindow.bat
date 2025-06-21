@@ -6,7 +6,7 @@ if "%~1"=="" (
     echo   - Perl スクリプトのショートカット（.lnk）をこのバッチにドラッグ＆ドロップ
     echo   - または、ターミナルから .lnk ファイルを引数にして実行
     echo.
-    echo 例： run_multi_windows_OneWindow.bat.bat "C:\path\to\Script1.lnk" "C:\path\to\Script2.lnk"
+    echo 例： ./run_multi_windows_OneWindow.bat "C:\Users\kenic\OneDrive\Desktop\testBL1.lnk" "C:\Users\kenic\OneDrive\Desktop\testBL2.lnk"
     pause
     exit /b
 )
