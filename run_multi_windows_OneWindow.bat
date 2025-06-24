@@ -11,7 +11,7 @@ if "%~1"=="" (
     exit /b
 )
 
-set "wt_cmd=wt"
+set "wt_cmd=wt --maximized"
 
 :loop
 if "%~1"=="" goto run
@@ -22,9 +22,13 @@ for /f "usebackq tokens=*" %%A in (`powershell -nologo -noprofile -command "$s =
         set "exe=%%A"
     ) else (
         set "args=%%A"
-        set "wt_cmd=!wt_cmd! nt -p PowerShell --title "%~n1" --commandline ""!exe! !args!"" ;"
+        set "wt_cmd=!wt_cmd! nt -p PowerShell --title "%~n1" --commandline ""!exe! !args! "" ;"
+rem        set "wt_cmd=!wt_cmd! split-pane --horizontal nt -p PowerShell --title "%~n1" --commandline ""!exe! !args! "" ;"
         set "exe="
     )
+    echo "~~~~~~~~"
+    echo !wt_cmd!
+    echo "~~~~~~~~"
 )
 
 shift
@@ -38,6 +42,6 @@ echo ----------------------------------------
 echo 実行されるコマンド:
 echo !wt_cmd!
 echo ----------------------------------------
-rem pause
+pause
 
 %wt_cmd%

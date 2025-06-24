@@ -1,0 +1,8 @@
+wt nt -p PowerShell --title "直接BL2強度" --commandline ""C:\Strawberry\perl\bin\perl.exe C:\Users\kenic\Dropbox\gitdir\Oto\oto17_Ntfy_Upper_Lower.pl xfel_bl_2_tc_bm_1_pd/charge 93 1000 0.02 oto0.wav 3 "" ; nt -p PowerShell --title "直接BL3強度" --commandline ""C:\Strawberry\perl\bin\perl.exe C:\Users\kenic\Dropbox\gitdir\Oto\oto17_Ntfy_Upper_Lower.pl  xfel_bl_3_tc_bm_1_pd/charge 93 1000 0.02 oto0.wav 3 ""
+
+
+
+
+wt nt -p PowerShell --title "直接BL2強度" --commandline ""C:\Strawberry\perl\bin\perl.exe C:\Users\kenic\Dropbox\gitdir\Oto\oto17_Ntfy_Upper_Lower.pl xfel_bl_2_tc_bm_1_pd/charge 93 1000 0.02 oto0.wav 3 "" ; split-pane --vertical nt -p PowerShell --title "直接BL3強度" --commandline ""C:\Strawberry\perl\bin\perl.exe C:\Users\kenic\Dropbox\gitdir\Oto\oto17_Ntfy_Upper_Lower.pl  xfel_bl_3_tc_bm_1_pd/charge 93 1000 0.02 oto0.wav 3 ""
+
+
