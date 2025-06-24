@@ -49,8 +49,7 @@ Usage:
 
 	実験棟
 	perl oto17_Ntfy_Upper_Lower.pl xfel_bl_3_tc_bm_1_pd/charge 93 1000 0.02 oto0.wav 3
-    perl oto17_Ntfy_Upper_Lower.pl xfel_mon_msbpm_bl3_dump_1_beamstatus/summary 0.85 1.05 0.21 oto0.wav 3
-
+	perl oto17_Ntfy_Upper_Lower.pl xfel_mon_msbpm_bl3_dump_1_beamstatus/summary 80 101 0.03 oto0.wav 15
 
 	加速器 xfel_mon_msbpm_bl3_dump_1_y/potition
 	perl oto17_Ntfy_Upper_Lower.pl 550648 98 102 0.02 oto0.wav 3
@@ -393,6 +392,10 @@ sub Get_only_data_EXP{
 					}elsif($data[3] eq "saturated"){
 						$cnt_saturated++;
 					}else{
+
+						$data[3] =~ s/[A-Za-z]$//; # 末尾のアルファベット一文字を削除
+						#print "Value: $data[3]\n"; # 出力: 数値だけ: 1.234E+05
+
 						$min = $data[3]		if($cnt==0);				
 						$max = $data[3]		if($cnt==0);		
 						$min = $data[3]		if($data[3] < $min);
