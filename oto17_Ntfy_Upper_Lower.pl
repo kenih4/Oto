@@ -382,9 +382,10 @@ sub Get_only_data_EXP{
 	foreach ( @line ) {
 #		print  "$_\n";
 #		print  "$_\n" unless /^\s*$/;
+		next if $_ eq '';  # $_が空の場合は次のループへスキップ
 		if($_!~/SyncDAQ/ & $_!~/Trigger*/){
 			my @data = split(/ /, $_);
-#			print "@data[0]\t@data[1]\t@data[2]\t@data[3]\n";			
+			#print "@data[0]\t@data[1]\t@data[2]\t@data[3]\n";			
 			
 			if($data[1] =~/[0-9]{4}-[0-9]{2}-[0-9]{2}/){	
 					if($data[3] eq "not-converged"){
