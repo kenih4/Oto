@@ -242,9 +242,11 @@ if ($ARGV[0] =~ /^[0-9]+$/) {
 	#@result = Get_only_data_ACC($url,"C:\\Users\\kenic\\AppData\\Local\\Temp\\out.txt");
 	@result = Get_only_data_ACC($url,"$tmpdir/out.txt");
 }else{
+	my $tmp_file = $ARGV[0];
+	$tmp_file =~ s/\//_/g;  # /を_に置換
 	#print "$ARGV[0] 	EXP\n";
 	#@result = Get_only_data_EXP($url,"C:\\Users\\kenic\\AppData\\Local\\Temp\\out.txt");	
-	@result = Get_only_data_EXP($url,"$tmpdir/out.txt");
+	@result = Get_only_data_EXP($url,"$tmpdir/$tmp_file.txt");
 }
 #	print $url;
 #	print  "result	@result\n";
