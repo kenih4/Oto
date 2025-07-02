@@ -283,7 +283,6 @@ if ($ARGV[0] =~ /^[0-9]+$/) {
 
 		if($cnt >= $cnt_limit){
 			print  "\e[48;5;124m Onsei!!!		[$perc]			<$wav_file> \e[0m\n";
-			Win32::MsgBox($ARGV[0], 0 + 48, "Caption");
 #			mail_send($ARGV[0], ($result[3]/$initial_value)*100);
 #			system("python Send_notification_by_pushbullet.py $ARGV[0]");
 			system("curl -d \"$dt_n	$ARGV[0]	$perc % \" ntfy.sh/Uz44wThqEATElY48");
@@ -292,6 +291,8 @@ if ($ARGV[0] =~ /^[0-9]+$/) {
 #			Win32::Sound::Volume($vol);
 			Win32::Sound::Play("wav/".$wav_file,SND_NOSTOP);
 			Win32::Sound::Stop();
+
+			Win32::MsgBox($ARGV[0], 0 + 48, "Caption");
 
 			print  "sleep ,	",WAITSEC,"..........................................\n";
 			sleep(WAITSEC);
