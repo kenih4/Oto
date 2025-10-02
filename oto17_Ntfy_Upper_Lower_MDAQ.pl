@@ -49,7 +49,7 @@ Usage:
 
 
     #   scss_vac_238_ccg_1/pressure
-    perl oto17_Ntfy_Upper_Lower_MDAQ.pl 700960 55 112 0.02 oto0.wav 3
+    perl oto17_Ntfy_Upper_Lower_MDAQ.pl xf 700960 55 112 0.02 oto0.wav 3
     
 
 	新しくターミナルを開いて実行する場合
@@ -90,15 +90,15 @@ print  "Temp file stderr :	[$tempfilename_errlog]	Created by File::Temp\n";
 #SetForegroundWindow($windows[0]) if @windows;
 
 
+my $xf_or_sr 		= $ARGV[0];
+my $sigid 		= $ARGV[1];
+my $thre_LOW    =   $ARGV[2];
+my $thre_UP =       $ARGV[3];
+my $vol =           $ARGV[4];
+my $wav_file    =   $ARGV[5];
+my $cnt_limit   =   $ARGV[6];
 
-my $sigid 		= $ARGV[0];
-my $thre_LOW    =   $ARGV[1];
-my $thre_UP =       $ARGV[2];
-my $vol =           $ARGV[3];
-my $wav_file    =   $ARGV[4];
-my $cnt_limit   =   $ARGV[5];
-
-printf "signal=%s	thre_LOW=%s thre_UP=%s	volume=%s	wav_file=%s	cnt_limit=%s\n\n",$sigid,$thre_LOW,$thre_UP,$vol,$wav_file,$cnt_limit;
+printf "xf_or_sr = %s	signal=%s	thre_LOW=%s thre_UP=%s	volume=%s	wav_file=%s	cnt_limit=%s\n\n",$xf_or_sr,$sigid,$thre_LOW,$thre_UP,$vol,$wav_file,$cnt_limit;
 
 
 
@@ -158,6 +158,15 @@ printf "$dt	\n\n";
 
 my $host = "http://websvr02.spring8.or.jp";
 
+my $hostMDAQ;
+if($xf_or_sr eq "xf"){
+	$hostMDAQ = "http://xfweb-dmz-03.spring8.or.jp";
+}elsif($xf_or_sr eq "sr"){
+	$hostMDAQ = "http://srweb-dmz-03.spring8.or.jp";
+}else{
+	print "ERROR: 1st argument must be 'xfel' or 'sr'\n";
+	exit(0);
+}
 
 my @wav = ("oto0.wav","oto1.wav","oto2.wav","oto3.wav","oto4.wav","oto5.wav","oto6.wav","oto7.wav","oto8.wav","oto9.wav");
 my @wav_other = ("teishi.wav");
@@ -445,7 +454,7 @@ sub Get_only_data_ACC{
 		if($_!~/SyncDAQ/ & $_!~/Trigger*/){
 			my @data = split(/,/, $_);
 #			print "@data[0]\t@data[1]\t@data[2]\t@data[3]\n";
-			if(@data[1] =~/[0-9]{4}\/[0-9]{2}\/[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}/){	
+			if($data[1] =~/[0-9]{4}\/[0-9]{2}\/[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}/){	
 					#print "D	min = $min	max = $max	sum=$sum	mean=$mean	cnt=$cnt\n";
 						$min = $data[2]		if($cnt==0);				
 						$max = $data[2]		if($cnt==0);		
@@ -486,7 +495,6 @@ sub Get_only_data_ACC_MDAQ{
     $tree->parse($contents);
 
     # 大文字小文字を区別せず全textarea要素を取得
-    my @line;
     my $txt;
     for my $textarea ($tree->look_down('_tag' => 'textarea')) {
         #print "抽出結果:\n" . $textarea->as_text . "\n---\n";
@@ -651,8 +659,7 @@ sub Mdaq_ACC{
 #	http://srweb-dmz-03.spring8.or.jp/cgi-bin/MDAQ/mdaq_sync_plot.py?daq_type=1&lsig=550648&lmin=&lmax=&rmin=&rmax=&xmin=&xmax=&XY=Trend&begin_bt=2023%2F10%2F18+04%3A36%3A39&end_bt=2023%2F10%2F18+04%3A37%3A39&Selection=Trigger&TriggerStr=&Ndata=200&s=submit&sampling=-1&filter=evno&route_sel=4&data_order=asc&plot_style=dot&Command=text&runave=0&hide_err=on	
 #Syncdaq	my $url = "http://srweb-dmz-03.spring8.or.jp/cgi-bin/MDAQ/mdaq_sync_plot.py?daq_type=&lsig=&lmin=&lmax=&rmin=&rmax=&xmin=&xmax=&XY=&begin_bt=&end_bt=&Selection=&TriggerStr=&Ndata=&s=&sampling=&filter=&route_sel=&data_order=&plot_style=&Command=&runave=&hide_err=";
 
-#	my $url = "http://xfweb-dmz-03.spring8.or.jp/cgi-bin/MDAQ/mdaq_data.py?sig_id=700960&daq_type=0&b=2025%2F10%2F02+09%3A23%3A33&e=2025%2F10%2F02+10%3A23%3A33&period=900&bel=be&s=Set&format=text&_style0=line&yloglin=lin&ymin=&ymax=&sampling=-1&data_order=asc&legend_pos=left&dt_fmt=0&gw=640&runave=0&hide_err=on";
-	my $url = "http://xfweb-dmz-03.spring8.or.jp/cgi-bin/MDAQ/mdaq_data.py?sig_id=&daq_type=&b=&e=&period=&bel=&s=&format=&_style0=&yloglin=&ymin=&ymax=&sampling=&data_order=&legend_pos=&dt_fmt=&gw=&runave=&hide_err=";
+	my $url = $hostMDAQ."/cgi-bin/MDAQ/mdaq_data.py?sig_id=&daq_type=&b=&e=&period=&bel=&s=&format=&_style0=&yloglin=&ymin=&ymax=&sampling=&data_order=&legend_pos=&dt_fmt=&gw=&runave=&hide_err=";
 
 #    foreach ( @_ ) {
 #		print  "$_\n";
