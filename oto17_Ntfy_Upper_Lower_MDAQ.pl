@@ -49,7 +49,7 @@ Usage:
 
 
     #   scss_vac_238_ccg_1/pressure
-    perl oto17_Ntfy_Upper_Lower_MDAQ.pl 700960 98 102 0.02 oto0.wav 3
+    perl oto17_Ntfy_Upper_Lower_MDAQ.pl 700960 55 112 0.02 oto0.wav 3
     
 
 	新しくターミナルを開いて実行する場合
@@ -91,6 +91,15 @@ print  "Temp file stderr :	[$tempfilename_errlog]	Created by File::Temp\n";
 
 
 
+my $sigid 		= $ARGV[0];
+my $thre_LOW    =   $ARGV[1];
+my $thre_UP =       $ARGV[2];
+my $vol =           $ARGV[3];
+my $wav_file    =   $ARGV[4];
+my $cnt_limit   =   $ARGV[5];
+
+printf "signal=%s	thre_LOW=%s thre_UP=%s	volume=%s	wav_file=%s	cnt_limit=%s\n\n",$sigid,$thre_LOW,$thre_UP,$vol,$wav_file,$cnt_limit;
+
 
 
 
@@ -102,10 +111,9 @@ print "Temp folder :	$tmpdir\n";
 
 #mail_send('A','B','C');
 #system("python Send_notification_by_pushbullet.py Start");
-system("curl -d \"Start_$ARGV[0]\" ntfy.sh/Uz44wThqEATElY48");
+system("curl -d \"Start_$sigid\" ntfy.sh/Uz44wThqEATElY48");
 #exit(0);
 
-printf "signal=%s	thre_LOW=%s thre_UP=%s	volume=%s	wav_file=%s	cnt_limit=%s\n\n",$ARGV[0],$ARGV[1],$ARGV[2],$ARGV[3],$ARGV[4],$ARGV[5];
 
 print "ABC\e[4;31;44mDEF\e[0mGHI\n";
 print "ABC\e[38;5;45mDEF\e[0mGHI\n";
@@ -160,11 +168,6 @@ my $n_wav=0;
 my $cnt=0;
 my $initial_value = 0;
 
-my $thre_LOW    =   $ARGV[1];
-my $thre_UP =       $ARGV[2];
-my $vol =           $ARGV[3];
-my $wav_file    =   $ARGV[4];
-my $cnt_limit   =   $ARGV[5];
 
 my  $dt_before = DateTime->now(time_zone => 'Asia/Tokyo');
 #printf "dt_before	=  $dt_before	\n\n";
@@ -218,10 +221,10 @@ while(1){
     my $dt_n = DateTime->now(time_zone => 'Asia/Tokyo');
 
     my @result;
-    if ($ARGV[0] =~ /^[0-9]+$/) {
+    if ($sigid =~ /^[0-9]+$/) {
         my $dt_sta = DateTime->now(time_zone => 'JST-9')->subtract(minutes => 2);
         my $dt_sto = DateTime->now(time_zone => 'JST-9');
-        $url = &Mdaq_ACC($ARGV[0],"0",$dt_sta->strftime('%Y/%m/%d+%H:%M:%S'),$dt_sto->strftime('%Y/%m/%d+%H:%M:%S'),"900","be","Set","text","line","lin","","","-1","asc","left","0","640","0","on");
+        $url = &Mdaq_ACC($sigid,"0",$dt_sta->strftime('%Y/%m/%d+%H:%M:%S'),$dt_sto->strftime('%Y/%m/%d+%H:%M:%S'),"900","be","Set","text","line","lin","","","-1","asc","left","0","640","0","on");
         @result = Get_only_data_ACC_MDAQ($url,"$tmpdir/out.txt");
     }else{
         return;
@@ -231,12 +234,12 @@ while(1){
 
 	my $perc = ($result[3]/$initial_value)*100;	
 
-	if ($ARGV[0] =~ /^[0-9]+$/) {
-		#print "$ARGV[0]		ACC\n";
-		print  "$dt_n   SIGID:$ARGV[0]  mean = $result[3] ($perc%)%\n";
+	if ($sigid =~ /^[0-9]+$/) {
+		#print "$sigid		ACC\n";
+		print  "$dt_n   SIGID:$sigid  mean = $result[3] ($perc%)%\n";
 	}else{
-		#print "$ARGV[0] 	EXP\n";
-		#print  "$dt_n: $ARGV[0]    $result[5]/",SHOTNUM,"	$result[6]/",SHOTNUM,"	mean = $result[3]($perc%)	DAMEPALUSE = $damepulse_rate %\n";
+		#print "$sigid 	EXP\n";
+		#print  "$dt_n: $sigid    $result[5]/",SHOTNUM,"	$result[6]/",SHOTNUM,"	mean = $result[3]($perc%)	DAMEPALUSE = $damepulse_rate %\n";
 	}
 
 	#	Low data count
@@ -245,7 +248,7 @@ while(1){
 	    system("change_volume.exe 0.01");        
 		Win32::Sound::Play("wav/".$wav_other[0],SND_NOSTOP);
 		Win32::Sound::Stop();
-		system("curl -d \"$dt_n	$ARGV[0]	Many Not Converged\" ntfy.sh/Uz44wThqEATElY48");
+		system("curl -d \"$dt_n	$sigid	Many Not Converged\" ntfy.sh/Uz44wThqEATElY48");
 		sleep(WAITSEC);
 	}
 
@@ -256,16 +259,16 @@ while(1){
 
 		if($cnt >= $cnt_limit){
 			print  "\e[48;5;124m Onsei!!!		[$perc]			<$wav_file> \e[0m\n";
-#			mail_send($ARGV[0], ($result[3]/$initial_value)*100);
-#			system("python Send_notification_by_pushbullet.py $ARGV[0]");
-			system("curl -d \"$dt_n	$ARGV[0]	$perc % \" ntfy.sh/Uz44wThqEATElY48");
+#			mail_send($sigid, ($result[3]/$initial_value)*100);
+#			system("python Send_notification_by_pushbullet.py $sigid");
+			system("curl -d \"$dt_n	$sigid	$perc % \" ntfy.sh/Uz44wThqEATElY48");
 
 			system("change_volume.exe $vol");
 #			Win32::Sound::Volume($vol);
 			Win32::Sound::Play("wav/".$wav_file,SND_NOSTOP);
 			Win32::Sound::Stop();
 
-			Win32::MsgBox($ARGV[0], 0 + 48, "Caption");
+			Win32::MsgBox($sigid, 0 + 48, "Caption");
 
 			print  "sleep ,	",WAITSEC,"..........................................\n";
 			sleep(WAITSEC);
@@ -282,7 +285,7 @@ while(1){
 #	printf "dt_before	=  $dt_before	\n\n";
 
 
-	sleep(35);
+	sleep(55);
 	#Get_img ($url,"out.png");
 
 }
