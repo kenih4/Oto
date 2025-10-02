@@ -28,6 +28,7 @@ use Net::SMTPS;
 
 use Win32::GuiTest qw(FindWindowLike SetForegroundWindow);
 
+use HTML::TreeBuilder;
 
 
 =pod
@@ -47,12 +48,9 @@ Usage:
 	cpan Win32::Sound
 
 
-	実験棟
-	perl oto17_Ntfy_Upper_Lower.pl xfel_bl_3_tc_bm_1_pd/charge 93 1000 0.02 oto0.wav 3
-	perl oto17_Ntfy_Upper_Lower.pl xfel_mon_msbpm_bl3_dump_1_beamstatus/summary 80 101 0.03 oto0.wav 15
-
-	加速器 xfel_mon_msbpm_bl3_dump_1_y/potition
-	perl oto17_Ntfy_Upper_Lower.pl 550648 98 102 0.02 oto0.wav 3
+    #   scss_vac_238_ccg_1/pressure
+    perl oto17_Ntfy_Upper_Lower_MDAQ.pl 700960 98 102 0.02 oto0.wav 3
+    
 
 	新しくターミナルを開いて実行する場合
 	start cmd /k perl oto17_Ntfy_Upper_Lower.pl xfel_bl_3_tc_bm_1_pd/charge 93 1000 0.02 oto0.wav 3
@@ -155,22 +153,9 @@ my $host = "http://websvr02.spring8.or.jp";
 
 my @wav = ("oto0.wav","oto1.wav","oto2.wav","oto3.wav","oto4.wav","oto5.wav","oto6.wav","oto7.wav","oto8.wav","oto9.wav");
 my @wav_other = ("teishi.wav");
-my $sta_date="2016-09-27 00:00:00";
-my $sto_date="2016-09-27 00:00:01";	
-
 
 my $url;
-if ($ARGV[0] =~ /^[0-9]+$/) {
-	print "$ARGV[0]		ACC\n";
-	$url = &Syncdaq_ACC("1",$ARGV[0],"","","","","","","Trend","","","Trigger","","100","submit","-1","evno","4","asc","dot","text","0","on");
-}else{
-	print "$ARGV[0] 	EXP\n";
-	$url = &Syncdaq_EXP("data",$ARGV[0],"","","","","","","","","","","","Trend","","","",SHOTNUM,"Trigger");
-}
-print  "url	$url\n";
-#return;
 
-# - - - - - - - 
 my $n_wav=0;
 my $cnt=0;
 my $initial_value = 0;
@@ -204,19 +189,17 @@ my  $dt_before = DateTime->now(time_zone => 'Asia/Tokyo');
 
 while(1){
 
+=pod
 	my  $dt_after = DateTime->now(time_zone => 'Asia/Tokyo');
 #	printf "-dt_before	=  $dt_before	\n";
 #	printf "-dt_after	=  $dt_after	\n\n";
-
 	my $hour_before = $dt_before->hour;
 	my $minute_before = $dt_before->minute;
 	my $hour_after = $dt_after->hour;
 	my $minute_after = $dt_after->minute;
 #	printf "dt_before		$hour_before	:$minute_before	\n";
 #	printf "dt_after		$hour_after	:$minute_after	\n";
-
 	if($hour_before!=$hour_after and $hour_before==0){
-#	if($minute_before!=$hour_after and $minute_before==16){	# TEST
 		print  "Finish!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
 		exit(0);
 	} 
@@ -230,28 +213,19 @@ while(1){
 		print  "Finish!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
 		exit(0);
 	} 
-
-
-
+=cut
 
     my $dt_n = DateTime->now(time_zone => 'Asia/Tokyo');
 
-my @result;
-if ($ARGV[0] =~ /^[0-9]+$/) {
-	#print "$ARGV[0]		ACC\n";
-	#@result = Get_only_data_ACC($url,"C:\\Users\\kenic\\AppData\\Local\\Temp\\out.txt");
-	@result = Get_only_data_ACC($url,"$tmpdir/out.txt");
-}else{
-	my $tmp_file = $ARGV[0];
-	$tmp_file =~ s/\//_/g;  # /を_に置換
-	#print "$ARGV[0] 	EXP\n";
-	#@result = Get_only_data_EXP($url,"C:\\Users\\kenic\\AppData\\Local\\Temp\\out.txt");	
-	@result = Get_only_data_EXP($url,"$tmpdir/$tmp_file.txt");
-}
-#	print $url;
-#	print  "result	@result\n";
-
-	my $damepulse_rate = (1 - $result[3])*100;
+    my @result;
+    if ($ARGV[0] =~ /^[0-9]+$/) {
+        my $dt_sta = DateTime->now(time_zone => 'JST-9')->subtract(minutes => 2);
+        my $dt_sto = DateTime->now(time_zone => 'JST-9');
+        $url = &Mdaq_ACC($ARGV[0],"0",$dt_sta->strftime('%Y/%m/%d+%H:%M:%S'),$dt_sto->strftime('%Y/%m/%d+%H:%M:%S'),"900","be","Set","text","line","lin","","","-1","asc","left","0","640","0","on");
+        @result = Get_only_data_ACC_MDAQ($url,"$tmpdir/out.txt");
+    }else{
+        return;
+    }
 
 	if($initial_value==0){   $initial_value = $result[3];   }
 
@@ -259,14 +233,14 @@ if ($ARGV[0] =~ /^[0-9]+$/) {
 
 	if ($ARGV[0] =~ /^[0-9]+$/) {
 		#print "$ARGV[0]		ACC\n";
-		print  "$dt_n: $ARGV[0]    	mean = $result[3]($perc%)%\n";
+		print  "$dt_n   SIGID:$ARGV[0]  mean = $result[3] ($perc%)%\n";
 	}else{
 		#print "$ARGV[0] 	EXP\n";
-		print  "$dt_n: $ARGV[0]    $result[5]/",SHOTNUM,"	$result[6]/",SHOTNUM,"	mean = $result[3]($perc%)	DAMEPALUSE = $damepulse_rate %\n";
+		#print  "$dt_n: $ARGV[0]    $result[5]/",SHOTNUM,"	$result[6]/",SHOTNUM,"	mean = $result[3]($perc%)	DAMEPALUSE = $damepulse_rate %\n";
 	}
 
-	#	Many Not Converged (ex. Beam stop)
-	if($result[5] >= 500){
+	#	Low data count
+	if($result[4] <= 5){
 		print  "Onsei Teishi	n_wav = $wav_other[0]\n";
 	    system("change_volume.exe 0.01");        
 		Win32::Sound::Play("wav/".$wav_other[0],SND_NOSTOP);
@@ -276,8 +250,7 @@ if ($ARGV[0] =~ /^[0-9]+$/) {
 	}
 
 
-#	if( (($result[3] < $thre_LOW) || ($result[3] > $thre_UP)) && $result[5] < 200){
-	if( (($perc < $thre_LOW) || ($perc > $thre_UP)) && $result[5] < 200){
+	if( (($perc < $thre_LOW) || ($perc > $thre_UP)) && $result[4] >= 1){
 		print  "\e[38;5;1m cnt = $cnt \e[0m\n";
 		$n_wav++;
 
@@ -311,9 +284,6 @@ if ($ARGV[0] =~ /^[0-9]+$/) {
 
 	sleep(35);
 	#Get_img ($url,"out.png");
-
-
-
 
 }
 # - - - - - - - 
@@ -472,7 +442,7 @@ sub Get_only_data_ACC{
 		if($_!~/SyncDAQ/ & $_!~/Trigger*/){
 			my @data = split(/,/, $_);
 #			print "@data[0]\t@data[1]\t@data[2]\t@data[3]\n";
-			if($data[1] =~/[0-9]{4}\/[0-9]{2}\/[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}/){	
+			if(@data[1] =~/[0-9]{4}\/[0-9]{2}\/[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}/){	
 					#print "D	min = $min	max = $max	sum=$sum	mean=$mean	cnt=$cnt\n";
 						$min = $data[2]		if($cnt==0);				
 						$max = $data[2]		if($cnt==0);		
@@ -497,6 +467,62 @@ sub Get_only_data_ACC{
 }
 
 
+
+
+#-----------------------------------------------------------------------------------------------------------------
+sub Get_only_data_ACC_MDAQ{  
+	open(OUT_Get_data, "> $_[1]");
+	
+	my $cnt=0, my $sum=0,my $mean=0;
+	my $min,my $max;
+	my $url=$_[0];
+
+	my $contents = get($url);
+
+    my $tree = HTML::TreeBuilder->new;
+    $tree->parse($contents);
+
+    # 大文字小文字を区別せず全textarea要素を取得
+    my @line;
+    my $txt;
+    for my $textarea ($tree->look_down('_tag' => 'textarea')) {
+        #print "抽出結果:\n" . $textarea->as_text . "\n---\n";
+       	$txt = $textarea->as_text;
+    }
+    
+    $tree->delete;  # メモリ解放
+
+    my @line = split(/\n/, $txt);
+
+	foreach ( @line ) {
+#		print  "$_\n" unless /^\s*$/;
+			next if $_ eq '';  # $_が空の場合は次のループへスキップ
+            next if $_ =~ /#/; #  #が含まれ場合は次のループへスキップ
+			my @data = split(/,/, $_);
+            #print "===  0:@data[0]\t1:@data[1]\t2:@data[2]\t3:@data[3]\n";
+			if($data[0] =~/[0-9]{4}\/[0-9]{2}\/[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}/){	
+#					print "D	min = $min	max = $max	sum=$sum	mean=$mean	cnt=$cnt\n";
+						$min = $data[2]		if($cnt==0);				
+						$max = $data[2]		if($cnt==0);		
+						$min = $data[2]		if($data[2] < $min);
+						$max = $data[2]		if($data[2] > $max);
+						$sum += $data[2];			
+						$cnt++;		
+			}else{
+#				print "NOT DATE\n";			
+			}
+			print  OUT_Get_data	"$data[3]\n" unless /^\s*$/;
+		
+	}
+	close(OUT_Get_data);
+
+	if($cnt > 0){	
+		$mean=$sum/$cnt;
+	}
+#	print "min = $min	max = $max	sum=$sum	mean=$mean	cnt=$cnt\n";
+
+	return $min,$max,$sum,$mean,$cnt;
+}
 
 
 #-----------------------------------------------------------------------------------------------------------------
@@ -616,6 +642,42 @@ sub Syncdaq_ACC{
 
 
 
+#-----------------------------------------------------------------------------------------------------------------
+sub Mdaq_ACC{  
+#	my $url = $host."/cgi-bin/xdaq/plot_multi.cgi?&Command=&LeftSignals=&LeftMax=&LeftMin=&LeftLogy=&RightSignals=&RightMax=&RightMin=&RightLogy=&XSignals=&XMax=&XMin=&XLog=&XY=&BeginTime=&EndTime=&StartTrigger=&Ndata=&Selection=&BeginStr=&EndStr=&TriggerStr=";	
+#	http://srweb-dmz-03.spring8.or.jp/cgi-bin/MDAQ/mdaq_sync_plot.py?daq_type=1&lsig=550648&lmin=&lmax=&rmin=&rmax=&xmin=&xmax=&XY=Trend&begin_bt=2023%2F10%2F18+04%3A36%3A39&end_bt=2023%2F10%2F18+04%3A37%3A39&Selection=Trigger&TriggerStr=&Ndata=200&s=submit&sampling=-1&filter=evno&route_sel=4&data_order=asc&plot_style=dot&Command=text&runave=0&hide_err=on	
+#Syncdaq	my $url = "http://srweb-dmz-03.spring8.or.jp/cgi-bin/MDAQ/mdaq_sync_plot.py?daq_type=&lsig=&lmin=&lmax=&rmin=&rmax=&xmin=&xmax=&XY=&begin_bt=&end_bt=&Selection=&TriggerStr=&Ndata=&s=&sampling=&filter=&route_sel=&data_order=&plot_style=&Command=&runave=&hide_err=";
+
+#	my $url = "http://xfweb-dmz-03.spring8.or.jp/cgi-bin/MDAQ/mdaq_data.py?sig_id=700960&daq_type=0&b=2025%2F10%2F02+09%3A23%3A33&e=2025%2F10%2F02+10%3A23%3A33&period=900&bel=be&s=Set&format=text&_style0=line&yloglin=lin&ymin=&ymax=&sampling=-1&data_order=asc&legend_pos=left&dt_fmt=0&gw=640&runave=0&hide_err=on";
+	my $url = "http://xfweb-dmz-03.spring8.or.jp/cgi-bin/MDAQ/mdaq_data.py?sig_id=&daq_type=&b=&e=&period=&bel=&s=&format=&_style0=&yloglin=&ymin=&ymax=&sampling=&data_order=&legend_pos=&dt_fmt=&gw=&runave=&hide_err=";
+
+#    foreach ( @_ ) {
+#		print  "$_\n";
+#	}
+	
+	$url =~ s/sig_id=/sig_id=$_[0]/g;
+	$url =~ s/daq_type=/daq_type=$_[1]/g;
+	$url =~ s/b=/b=$_[2]/g;
+	$url =~ s/e=/e=$_[3]/g;
+	$url =~ s/period=/period=$_[4]/g;
+	$url =~ s/bel=/bel=$_[5]/g;
+	$url =~ s/s=/s=$_[6]/g;
+	$url =~ s/format=/format=$_[7]/g;
+	$url =~ s/_style0=/_style0=$_[8]/g;
+	$url =~ s/yloglin=/yloglin=$_[9]/g;
+	$url =~ s/ymin=/ymin=$_[10]/g;
+	$url =~ s/ymax=/ymax=$_[11]/g;
+	$url =~ s/sampling=/sampling=$_[12]/g;
+	$url =~ s/data_order=/data_order=$_[13]/g;
+	$url =~ s/legend_pos=/legend_pos=$_[14]/g;
+	$url =~ s/dt_fmt=/dt_fmt=$_[15]/g;
+	$url =~ s/gw=/gw=$_[16]/g;
+	$url =~ s/runave=/runave=$_[17]/g;
+	$url =~ s/hide_err=/hide_err=$_[18]/g;
+
+#	print  "url	$url\n";
+	return $url;
+}
 
 
 
