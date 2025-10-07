@@ -237,18 +237,15 @@ while(1){
     my $dt_n = DateTime->now(time_zone => 'Asia/Tokyo');
 
 my @result;
+my $tmp_file = $ARGV[0];
+$tmp_file =~ s/\//_/g;  # /を_に置換
 if ($ARGV[0] =~ /^[0-9]+$/) {
 	#print "$ARGV[0]		ACC\n";
-	#@result = Get_only_data_ACC($url,"C:\\Users\\kenic\\AppData\\Local\\Temp\\out.txt");
-	@result = Get_only_data_ACC($url,"$tmpdir/out.txt");
+	@result = Get_only_data_ACC($url,"$tmpdir/$tmp_file.txt");
 }else{
-	my $tmp_file = $ARGV[0];
-	$tmp_file =~ s/\//_/g;  # /を_に置換
-	#print "$ARGV[0] 	EXP\n";
-	#@result = Get_only_data_EXP($url,"C:\\Users\\kenic\\AppData\\Local\\Temp\\out.txt");	
+	#print "$ARGV[0] 	EXP\n";	
 	@result = Get_only_data_EXP($url,"$tmpdir/$tmp_file.txt");
 }
-#	print $url;
 #	print  "result	@result\n";
 
 	my $damepulse_rate = (1 - $result[3])*100;
