@@ -165,10 +165,10 @@ if ($ARGV[0] =~ /^[0-9]+$/) {
 	$url = &Syncdaq_ACC("1",$ARGV[0],"","","","","","","Trend","","","Trigger","","100","submit","-1","evno","4","asc","dot","text","0","on");
 }else{
 	print "$ARGV[0] 	EXP\n";
-	$url = &Syncdaq_EXP("data",$ARGV[0],"","","","","","","","","","","","Trend","","","",SHOTNUM,"Trigger");
+	$url = &Syncdaq_EXP("data",$ARGV[0],"","","","","","","","","","","","Trend","","","",SHOTNUM,"Trigger","","","");
 }
-print  "url	$url\n";
-#return;
+print  "url:	$url\n";
+
 
 # - - - - - - - 
 my $n_wav=0;

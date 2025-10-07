@@ -51,7 +51,12 @@ Usage:
     #   scss_vac_238_ccg_1/pressure
     perl oto17_Ntfy_Upper_Lower_MDAQ.pl xf 700960 55 112 0.02 oto0.wav 3
     
-
+	# RFTS
+	perl oto17_Ntfy_Upper_Lower_MDAQ.pl xt 400442 99 101 0.02 oto0.wav 3
+    
+	#xts_rf_s_cb2_4_mod_ccps_1/voltage
+	perl oto17_Ntfy_Upper_Lower_MDAQ.pl xt 406648 99 101 0.02 oto0.wav 3
+    
 	新しくターミナルを開いて実行する場合
 	start cmd /k perl oto17_Ntfy_Upper_Lower.pl xfel_bl_3_tc_bm_1_pd/charge 93 1000 0.02 oto0.wav 3
 
@@ -163,6 +168,8 @@ if($xf_or_sr eq "xf"){
 	$hostMDAQ = "http://xfweb-dmz-03.spring8.or.jp";
 }elsif($xf_or_sr eq "sr"){
 	$hostMDAQ = "http://srweb-dmz-03.spring8.or.jp";
+}elsif($xf_or_sr eq "xt"){
+	$hostMDAQ = "http://xfweb-dmz-02.spring8.or.jp";
 }else{
 	print "ERROR: 1st argument must be 'xfel' or 'sr'\n";
 	exit(0);
@@ -231,7 +238,7 @@ while(1){
 
     my @result;
     if ($sigid =~ /^[0-9]+$/) {
-        my $dt_sta = DateTime->now(time_zone => 'JST-9')->subtract(minutes => 2);
+        my $dt_sta = DateTime->now(time_zone => 'JST-9')->subtract(minutes => 1);
         my $dt_sto = DateTime->now(time_zone => 'JST-9');
         $url = &Mdaq_ACC($sigid,"0",$dt_sta->strftime('%Y/%m/%d+%H:%M:%S'),$dt_sto->strftime('%Y/%m/%d+%H:%M:%S'),"900","be","Set","text","line","lin","","","-1","asc","left","0","640","0","on");
         @result = Get_only_data_ACC_MDAQ($url,"$tmpdir/out.txt");
@@ -294,7 +301,7 @@ while(1){
 #	printf "dt_before	=  $dt_before	\n\n";
 
 
-	sleep(55);
+	sleep(120);
 	#Get_img ($url,"out.png");
 
 }
