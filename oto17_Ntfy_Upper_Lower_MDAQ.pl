@@ -30,6 +30,13 @@ use Win32::GuiTest qw(FindWindowLike SetForegroundWindow);
 
 use HTML::TreeBuilder;
 
+use Cwd 'getcwd';
+
+my $wdir = 'C:\\Users\\kenic\\Dropbox\\gitdir\\Oto';
+chdir $wdir
+  or die "Cannot change working directory $wdir: $!";
+my $cur_dir = getcwd;
+print "Current dir: $cur_dir\n";
 
 =pod
 sleep 100;
