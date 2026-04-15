@@ -61,6 +61,8 @@ Usage:
 	start cmd /k perl oto17_Ntfy_Upper_Lower.pl xfel_bl_3_tc_bm_1_pd/charge 93 1000 0.02 oto0.wav 3
 
 
+C:\Strawberry\perl\bin\perl.exe C:\Users\kenic\Dropbox\gitdir\Oto\oto17_Ntfy_Upper_Lower.pl xfel_bl_2_tc_bm_1_pd/charge 193 1000 0.13 oto0.wav 3
+
 	pp -o oto.exe oto17_Ntfy_Upper_Lower.pl
 
 
@@ -261,7 +263,7 @@ while(1){
 	#	Low data count
 	if($result[4] <= 5){
 		print  "Onsei Teishi	n_wav = $wav_other[0]\n";
-	    system("change_volume.exe 0.01");        
+	    system("change_volume.exe 0.01");      
 		Win32::Sound::Play("wav/".$wav_other[0],SND_NOSTOP);
 		Win32::Sound::Stop();
 		system("curl -d \"$dt_n	$sigid	Many Not Converged\" ntfy.sh/Uz44wThqEATElY48");
@@ -274,11 +276,11 @@ while(1){
 		$n_wav++;
 
 		if($cnt >= $cnt_limit){
-			print  "\e[48;5;124m Onsei!!!		[$perc]			<$wav_file> \e[0m\n";
+			print  "\e[48;5;124m Onsei!!!		Percnttage[$perc %]			<$wav_file> \e[0m\n";
 #			mail_send($sigid, ($result[3]/$initial_value)*100);
 #			system("python Send_notification_by_pushbullet.py $sigid");
 			system("curl -d \"$dt_n	$sigid	$perc % \" ntfy.sh/Uz44wThqEATElY48");
-
+			print  "DEBUG:	change_volume.exe $vol\n";
 			system("change_volume.exe $vol");
 #			Win32::Sound::Volume($vol);
 			Win32::Sound::Play("wav/".$wav_file,SND_NOSTOP);
@@ -301,7 +303,7 @@ while(1){
 #	printf "dt_before	=  $dt_before	\n\n";
 
 
-	sleep(120);
+	sleep(150);
 	#Get_img ($url,"out.png");
 
 }

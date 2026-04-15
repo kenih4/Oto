@@ -5,3 +5,5 @@ wav
 *.log
 out.txt
 test*
+memo.txt
+change_volume_test.pl
