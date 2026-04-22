@@ -66,7 +66,7 @@ Usage:
 
 	pp -o oto.exe oto17_Ntfy_Upper_Lower.pl
 
-
+# 文法チェック　適宜「__END__」 を挟んで再度 perl -c する
 
 # ターミナルサイズ変更したいがこれだとダメ
 use Win32::Console;
@@ -179,7 +179,7 @@ print  "url:	$url\n";
 # - - - - - - - 
 my $n_wav=0;
 my $cnt=0;
-my $initial_value = 0;
+my $initial_value = -1;
 
 my $thre_LOW    =   $ARGV[1];
 my $thre_UP =       $ARGV[2];
@@ -242,23 +242,28 @@ while(1){
 
     my $dt_n = DateTime->now(time_zone => 'Asia/Tokyo');
 
-my @result;
-my $tmp_file = $ARGV[0];
-$tmp_file =~ s/\//_/g;  # /を_に置換
-if ($ARGV[0] =~ /^[0-9]+$/) {
-	#print "$ARGV[0]		ACC\n";
-	@result = Get_only_data_ACC($url,"$tmpdir/$tmp_file.txt");
-}else{
-	#print "$ARGV[0] 	EXP\n";	
-	@result = Get_only_data_EXP($url,"$tmpdir/$tmp_file.txt");
-}
-#	print  "result	@result\n";
+	my @result;
+	my $tmp_file = $ARGV[0];
+	$tmp_file =~ s/\//_/g;  # /を_に置換
+	if ($ARGV[0] =~ /^[0-9]+$/) {
+		#print "$ARGV[0]		ACC\n";
+		@result = Get_only_data_ACC($url,"$tmpdir/$tmp_file.txt");
+	}else{
+		#print "$ARGV[0] 	EXP\n";	
+		@result = Get_only_data_EXP($url,"$tmpdir/$tmp_file.txt");
+	}
+	#	print  "result	@result\n";
 
 	my $damepulse_rate = (1 - $result[3])*100;
 
-	if($initial_value==0){   $initial_value = $result[3];   }
-
-	my $perc = ($result[3]/$initial_value)*100;	
+	if($initial_value==-1){   $initial_value = $result[3];   print "Initial value set to $initial_value\n"; }
+#	my $perc = ($result[3]/$initial_value)*100;	
+	my $reason;
+	my $perc = safe_div($result[3], $initial_value, \$reason);
+	if (!defined $perc) {
+		print "Division by zero or other error: $reason\n";
+		exit(0);
+	}
 
 	if ($ARGV[0] =~ /^[0-9]+$/) {
 		#print "$ARGV[0]		ACC\n";
@@ -708,6 +713,25 @@ sub mail_send() {
 
 
 
+
+#ゼロ除算を安全に処理する関数
+sub safe_div {
+    my ($a, $b, $reason_ref) = @_;
+
+    if ($b == 0) {
+        $$reason_ref = "ゼロ除算のため計算不可";
+        return undef;
+    }
+
+    my $result = eval { $a / $b };
+    if ($@) {
+        $$reason_ref = "Perl が計算を拒否: $@";
+        return undef;
+    }
+
+    $$reason_ref = "";
+    return $result*100;
+}
 
 
 
